@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dimple.dao.ClazzDao">
+
+	<resultMap type="com.dimple.entity.Clazz" id="ClazzMap">
+		<result property="classId" column="class_id"/>
+		<result property="className" column="class_name"/>
+		<result property="createBy" column="create_by"/>
+		<result property="createDate" column="create_date"/>
+		<result property="updateBy" column="update_by"/>
+		<result property="updateDate" column="update_date"/>
+	</resultMap>
+
+	<!--查询单个-->
+	<select id="selectSysClassById" resultType="com.dimple.entity.Clazz">
+		select
+			*
+		from class
+		where class_id = #{classId}
+	</select>
+
+
+	<!--通过实体作为筛选条件查询-->
+	<select id="getClazzList" resultMap="ClazzMap">
+		select
+		class_id, class_name, create_by, create_date, update_by, update_date
+		from class
+
+	</select>
+
+	<!--新增所有列-->
+	<insert id="insert" >
+		insert into class(
+		<if test="className != null and className != ''">class_name,</if>
+		<if test="createBy != null and createBy != ''">create_by,</if>
+		<if test="updateBy != null and updateBy != ''">update_by,</if>
+		create_date
+		)values(
+		<if test="className != null and className != ''">#{className},</if>
+		<if test="createBy != null and createBy != ''">#{createBy},</if>
+		<if test="updateBy != null and updateBy != ''">#{updateBy},</if>
+		sysdate()
+		)
+	</insert>
+
+	<!--通过主键修改数据-->
+	<update id="update">
+		update class
+		<set>
+			<if test="className != null and className != ''">
+				class_name = #{className},
+			</if>
+			<if test="updateBy != null and updateBy != ''">
+				update_by = #{updateBy},
+			</if>
+			update_date = sysdate()
+		</set>
+		where class_id = #{classId}
+	</update>
+
+	<!--通过实体作为筛选条件查询-->
+	<select id="queryAll" resultMap="ClazzMap">
+		select
+		class_id, class_name,create_date
+		from class
+		<where>
+			<if test="classId != null and classId != ''">
+				and class_id = #{classId}
+			</if>
+			<if test="className != null and className != ''">
+				and class_name = #{className}
+			</if>
+
+		</where>
+	</select>
+
+	<!--通过主键删除-->
+	<delete id="deleteByIds">
+		delete from class where class_id in
+		<foreach collection="array" close=")" open="(" separator="," item="id">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>
